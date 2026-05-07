@@ -1,8 +1,7 @@
-import { useState, useMemo } from 'react';
-import { UserRole } from '../types';
+import React, { useState, useMemo } from 'react';
+import { UserRole, Contribution } from '../types';
 import {
   participants,
-  generateContributions,
   generateMonthData,
   formatCurrency,
   formatDate,
@@ -21,13 +20,24 @@ import {
 
 interface ContributionsProps {
   role: UserRole;
+  contributions: Contribution[];
+  setContributions: React.Dispatch<React.SetStateAction<Contribution[]>>;
 }
 
-export default function Contributions({ role }: ContributionsProps) {
+export default function Contributions({ role, contributions, setContributions }: ContributionsProps) {
   const [filterMonth, setFilterMonth] = useState<number>(getCurrentMonth() || 1);
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const contributions = useMemo(() => generateContributions(), []);
   const monthData = useMemo(() => generateMonthData(), []);
+
+  const handleTogglePaid = (id: string) => {
+    setContributions(prev => prev.map(c => {
+      if (c.id !== id) return c;
+      return {
+        ...c,
+        status: c.status === 'paid' ? 'pending' : 'paid',
+      };
+    }));
+  };
 
   const filtered = contributions.filter(c => {
     if (c.month !== filterMonth) return false;
@@ -200,13 +210,20 @@ export default function Contributions({ role }: ContributionsProps) {
                     <td className="px-6 py-4">{statusBadge(c.status)}</td>
                     {role === 'admin' && (
                       <td className="px-6 py-4">
-                        {c.status === 'pending' && (
-                          <button className="px-3 py-1.5 rounded-lg bg-primary-600/20 text-primary-400 text-xs font-medium hover:bg-primary-600/30 transition-colors border border-primary-500/20">
+                        {c.status !== 'paid' ? (
+                          <button
+                            onClick={() => handleTogglePaid(c.id)}
+                            className="px-3 py-1.5 rounded-lg bg-primary-600/20 text-primary-400 text-xs font-medium hover:bg-primary-600/30 transition-colors border border-primary-500/20"
+                          >
                             Mark Paid
                           </button>
-                        )}
-                        {c.status === 'paid' && (
-                          <span className="text-xs text-slate-500">Confirmed</span>
+                        ) : (
+                          <button
+                            onClick={() => handleTogglePaid(c.id)}
+                            className="px-3 py-1.5 rounded-lg bg-slate-700/20 text-slate-300 text-xs font-medium hover:bg-slate-700/30 transition-colors border border-slate-600/30"
+                          >
+                            Mark Unpaid
+                          </button>
                         )}
                       </td>
                     )}

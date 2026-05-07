@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { ViewMode, UserRole } from './types';
+import { useEffect, useState } from 'react';
+import { ViewMode, UserRole, Contribution, Payout } from './types';
+import { generateContributions, generatePayouts } from './data';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -11,34 +12,76 @@ import Schedule from './components/Schedule';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
 
+const CONTRIBUTIONS_STORAGE_KEY = 'bookey-contributions';
+const PAYOUTS_STORAGE_KEY = 'bookey-payouts';
+
+function loadFromStorage<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const stored = window.localStorage.getItem(key);
+    return stored ? (JSON.parse(stored) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
   const [role, setRole] = useState<UserRole>('admin');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [contributions, setContributions] = useState<Contribution[]>(() =>
+    loadFromStorage(CONTRIBUTIONS_STORAGE_KEY, generateContributions())
+  );
+  const [payouts, setPayouts] = useState<Payout[]>(() =>
+    loadFromStorage(PAYOUTS_STORAGE_KEY, generatePayouts())
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(CONTRIBUTIONS_STORAGE_KEY, JSON.stringify(contributions));
+  }, [contributions]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(PAYOUTS_STORAGE_KEY, JSON.stringify(payouts));
+  }, [payouts]);
+
+  const handleResetData = () => {
+    if (typeof window === 'undefined') return;
+    const confirmed = window.confirm('Reset all saved thrift data and return to defaults? This cannot be undone.');
+    if (!confirmed) return;
+
+    const initialContributions = generateContributions();
+    const initialPayouts = generatePayouts();
+    setContributions(initialContributions);
+    setPayouts(initialPayouts);
+    window.localStorage.removeItem(CONTRIBUTIONS_STORAGE_KEY);
+    window.localStorage.removeItem(PAYOUTS_STORAGE_KEY);
+  };
 
   const renderView = () => {
     // User role sees different dashboard
     if (role === 'user' && currentView === 'dashboard') {
-      return <UserDashboard setCurrentView={setCurrentView} />;
+      return <UserDashboard setCurrentView={setCurrentView} contributions={contributions} payouts={payouts} />;
     }
 
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard role={role} setCurrentView={setCurrentView} />;
+        return <Dashboard role={role} setCurrentView={setCurrentView} contributions={contributions} payouts={payouts} />;
       case 'participants':
-        return <Participants role={role} />;
+        return <Participants role={role} contributions={contributions} payouts={payouts} />;
       case 'contributions':
-        return <Contributions role={role} />;
+        return <Contributions role={role} contributions={contributions} setContributions={setContributions} />;
       case 'payouts':
-        return <Payouts role={role} />;
+        return <Payouts role={role} payouts={payouts} setPayouts={setPayouts} />;
       case 'schedule':
         return <Schedule />;
       case 'reports':
-        return <Reports />;
+        return <Reports contributions={contributions} payouts={payouts} />;
       case 'settings':
-        return <Settings />;
+        return <Settings onResetData={handleResetData} />;
       default:
-        return <Dashboard role={role} setCurrentView={setCurrentView} />;
+        return <Dashboard role={role} setCurrentView={setCurrentView} contributions={contributions} payouts={payouts} />;
     }
   };
 

@@ -1,8 +1,7 @@
-import { useMemo } from 'react';
-import { UserRole } from '../types';
+import React, { useMemo } from 'react';
+import { UserRole, Payout } from '../types';
 import {
   participants,
-  generatePayouts,
   generateMonthData,
   formatCurrency,
   formatDate,
@@ -19,12 +18,23 @@ import {
 
 interface PayoutsProps {
   role: UserRole;
+  payouts: Payout[];
+  setPayouts: React.Dispatch<React.SetStateAction<Payout[]>>;
 }
 
-export default function Payouts({ role }: PayoutsProps) {
-  const payouts = useMemo(() => generatePayouts(), []);
+export default function Payouts({ role, payouts, setPayouts }: PayoutsProps) {
   const monthData = useMemo(() => generateMonthData(), []);
   const currentMonth = getCurrentMonth();
+
+  const handleTogglePayout = (id: string) => {
+    setPayouts(prev => prev.map(p => {
+      if (p.id !== id) return p;
+      return {
+        ...p,
+        status: p.status === 'paid' ? 'pending' : 'paid',
+      };
+    }));
+  };
 
   const totalPaidOut = payouts
     .filter(p => p.status === 'paid')
@@ -148,9 +158,12 @@ export default function Payouts({ role }: PayoutsProps) {
                         </p>
                       </div>
 
-                      {role === 'admin' && payout.status !== 'paid' && isCurrent && (
-                        <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-accent-500 text-slate-900 text-sm font-bold hover:opacity-90 transition-opacity">
-                          Process Payout
+                      {role === 'admin' && (
+                        <button
+                          onClick={() => handleTogglePayout(payout.id)}
+                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-accent-500 text-slate-900 text-sm font-bold hover:opacity-90 transition-opacity"
+                        >
+                          {payout.status === 'paid' ? 'Mark Unpaid' : 'Mark Paid'}
                         </button>
                       )}
                     </div>

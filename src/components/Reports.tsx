@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
+import { Contribution, Payout } from '../types';
 import {
   participants,
-  generateContributions,
-  generatePayouts,
   generateMonthData,
   formatCurrency,
   getCurrentMonth,
@@ -28,11 +27,22 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
-export default function Reports() {
-  const contributions = useMemo(() => generateContributions(), []);
-  const payouts = useMemo(() => generatePayouts(), []);
+interface ReportsProps {
+  contributions: Contribution[];
+  payouts: Payout[];
+}
+
+export default function Reports({ contributions, payouts }: ReportsProps) {
   const monthData = useMemo(() => generateMonthData(), []);
   const currentMonth = getCurrentMonth();
+
+  const handleGenerateReport = () => {
+    alert('Generate Report clicked!');
+  };
+
+  const handleExportAll = () => {
+    alert('Export All clicked!');
+  };
 
   // Per-member contribution data
   const memberData = participants.map(p => {
@@ -83,11 +93,17 @@ export default function Reports() {
           <p className="text-sm text-slate-400">Comprehensive analytics and reporting</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700/50 text-slate-300 text-sm font-medium hover:bg-slate-700 transition-colors">
+          <button
+            onClick={handleGenerateReport}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700/50 text-slate-300 text-sm font-medium hover:bg-slate-700 transition-colors"
+          >
             <FileText size={14} />
             Generate Report
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-medium hover:bg-primary-500 transition-colors">
+          <button
+            onClick={handleExportAll}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-medium hover:bg-primary-500 transition-colors"
+          >
             <Download size={14} />
             Export All
           </button>

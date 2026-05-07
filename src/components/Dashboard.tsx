@@ -1,9 +1,7 @@
 import { useMemo } from 'react';
-import { UserRole } from '../types';
+import { UserRole, Contribution, Payout } from '../types';
 import {
   participants,
-  generateContributions,
-  generatePayouts,
   generateMonthData,
   formatCurrency,
   getCurrentMonth,
@@ -38,12 +36,12 @@ import {
 interface DashboardProps {
   role: UserRole;
   setCurrentView: (view: any) => void;
+  contributions: Contribution[];
+  payouts: Payout[];
 }
 
-export default function Dashboard({ role, setCurrentView }: DashboardProps) {
+export default function Dashboard({ role, setCurrentView, contributions, payouts }: DashboardProps) {
   const currentMonth = getCurrentMonth();
-  const contributions = useMemo(() => generateContributions(), []);
-  const payouts = useMemo(() => generatePayouts(), []);
   const monthData = useMemo(() => generateMonthData(), []);
 
   const totalContributed = contributions

@@ -11,7 +11,11 @@ import {
   Info,
 } from 'lucide-react';
 
-export default function Settings() {
+interface SettingsProps {
+  onResetData: () => void;
+}
+
+export default function Settings({ onResetData }: SettingsProps) {
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -231,8 +235,17 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Save */}
-      <div className="flex justify-end">
+      {/* Save + Reset */}
+      <div className="flex flex-col sm:flex-row justify-end gap-3">
+        <button
+          onClick={() => {
+            const confirmed = window.confirm('Reset saved thrift data and return to default values?');
+            if (confirmed) onResetData();
+          }}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 font-semibold hover:bg-slate-700 transition-opacity"
+        >
+          Reset Saved Data
+        </button>
         <button
           onClick={handleSave}
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-primary-500/20"

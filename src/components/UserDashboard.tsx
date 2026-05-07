@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
+import { Contribution, Payout } from '../types';
 import {
   participants,
-  generateContributions,
-  generatePayouts,
   generateMonthData,
   formatCurrency,
   formatDate,
@@ -31,14 +30,14 @@ import {
 
 interface UserDashboardProps {
   setCurrentView: (view: any) => void;
+  contributions: Contribution[];
+  payouts: Payout[];
 }
 
-export default function UserDashboard({ setCurrentView }: UserDashboardProps) {
+export default function UserDashboard({ setCurrentView, contributions, payouts }: UserDashboardProps) {
   // Simulating logged-in user as User A (position 1)
   const user = participants[0];
   const currentMonth = getCurrentMonth();
-  const contributions = useMemo(() => generateContributions(), []);
-  const payouts = useMemo(() => generatePayouts(), []);
   const monthData = useMemo(() => generateMonthData(), []);
 
   const myContributions = contributions.filter(c => c.participantId === user.id);

@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { UserRole } from '../types';
+import { UserRole, Contribution, Payout } from '../types';
 import {
   participants,
-  generateContributions,
-  generatePayouts,
   formatCurrency,
   formatDate,
   getCurrentMonth,
@@ -22,14 +20,14 @@ import {
 
 interface ParticipantsProps {
   role: UserRole;
+  contributions: Contribution[];
+  payouts: Payout[];
 }
 
-export default function Participants({ role }: ParticipantsProps) {
+export default function Participants({ role, contributions, payouts }: ParticipantsProps) {
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const currentMonth = getCurrentMonth();
-  const contributions = generateContributions();
-  const payouts = generatePayouts();
 
   const filtered = participants.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
