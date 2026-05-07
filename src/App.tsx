@@ -94,7 +94,7 @@ export default function App() {
   const renderView = () => {
     // User role sees different dashboard
     if (role === 'user' && currentView === 'dashboard') {
-      return <UserDashboard setCurrentView={setCurrentView} contributions={userContributions} payouts={userPayouts} participantId={currentUser.participantId} />;
+      return <UserDashboard setCurrentView={setCurrentView} contributions={userContributions} payouts={userPayouts} participantId={currentUser.participantId} setContributions={setContributions} />;
     }
 
     switch (currentView) {

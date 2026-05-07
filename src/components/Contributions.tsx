@@ -16,6 +16,7 @@ import {
   ChevronDown,
   Wallet,
   TrendingUp,
+  CreditCard,
 } from 'lucide-react';
 
 interface ContributionsProps {
@@ -24,9 +25,133 @@ interface ContributionsProps {
   setContributions: React.Dispatch<React.SetStateAction<Contribution[]>>;
 }
 
+interface PaymentModalProps {
+  contribution: Contribution;
+  participant: any;
+  onClose: () => void;
+  onPaymentSuccess: (contributionId: string) => void;
+}
+
+function PaymentModal({ contribution, participant, onClose, onPaymentSuccess }: PaymentModalProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [step, setStep] = useState<'details' | 'processing' | 'success'>('details');
+
+  const handlePayment = async () => {
+    setStep('processing');
+    setIsProcessing(true);
+
+    // Simulate payment processing
+    setTimeout(() => {
+      setStep('success');
+      setIsProcessing(false);
+      setTimeout(() => {
+        onPaymentSuccess(contribution.id);
+        onClose();
+      }, 2000);
+    }, 3000);
+  };
+
+  const monthData = generateMonthData();
+  const month = monthData[contribution.month - 1];
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="glass-card rounded-2xl p-6 border border-slate-700/30 max-w-md w-full">
+        {step === 'details' && (
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white">Make Payment</h3>
+              <button
+                onClick={onClose}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-primary-500/10 flex items-center justify-center mb-4">
+                  <CreditCard size={32} className="text-primary-400" />
+                </div>
+                <h4 className="text-lg font-semibold text-white mb-2">
+                  {month?.label} Contribution
+                </h4>
+                <p className="text-sm text-slate-400">
+                  Position #{participant.position} • {participant.name}
+                </p>
+              </div>
+
+              <div className="bg-slate-800/50 rounded-xl p-4 space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-400">Contribution:</span>
+                  <span className="text-sm text-white">{formatCurrency(contribution.amount)}</span>
+                </div>
+                {contribution.operationalCharge > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-slate-400">Operational Charge:</span>
+                    <span className="text-sm text-white">{formatCurrency(contribution.operationalCharge)}</span>
+                  </div>
+                )}
+                <div className="border-t border-slate-700/50 pt-2 flex justify-between">
+                  <span className="text-sm font-semibold text-white">Total:</span>
+                  <span className="text-sm font-semibold text-primary-400">{formatCurrency(contribution.totalPaid)}</span>
+                </div>
+              </div>
+
+              <div className="bg-accent-500/10 border border-accent-500/20 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-accent-400">
+                  <Clock size={16} />
+                  <span className="text-sm font-medium">Due: {formatDate(contribution.date)}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={onClose}
+                  className="flex-1 px-4 py-3 rounded-xl bg-slate-700/50 text-slate-300 hover:bg-slate-700/70 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handlePayment}
+                  className="flex-1 px-4 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-semibold transition-colors"
+                >
+                  Pay Now
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {step === 'processing' && (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-primary-500/10 flex items-center justify-center mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-400 border-t-transparent"></div>
+            </div>
+            <h4 className="text-lg font-semibold text-white mb-2">Processing Payment</h4>
+            <p className="text-sm text-slate-400">Please wait while we process your payment...</p>
+          </div>
+        )}
+
+        {step === 'success' && (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-primary-500/10 flex items-center justify-center mb-4">
+              <CheckCircle2 size={32} className="text-primary-400" />
+            </div>
+            <h4 className="text-lg font-semibold text-white mb-2">Payment Successful!</h4>
+            <p className="text-sm text-slate-400">Your contribution has been recorded.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Contributions({ role, contributions, setContributions }: ContributionsProps) {
   const [filterMonth, setFilterMonth] = useState<number>(getCurrentMonth() || 1);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [paymentModal, setPaymentModal] = useState<{ isOpen: boolean; contribution?: Contribution }>({ isOpen: false });
   const monthData = useMemo(() => generateMonthData(), []);
 
   const handleTogglePaid = (id: string) => {
@@ -37,6 +162,12 @@ export default function Contributions({ role, contributions, setContributions }:
         status: c.status === 'paid' ? 'pending' : 'paid',
       };
     }));
+  };
+
+  const handlePaymentSuccess = (contributionId: string) => {
+    setContributions(prev => prev.map(c => 
+      c.id === contributionId ? { ...c, status: 'paid' as const } : c
+    ));
   };
 
   const filtered = contributions.filter(c => {
@@ -227,6 +358,21 @@ export default function Contributions({ role, contributions, setContributions }:
                         )}
                       </td>
                     )}
+                    {role === 'user' && c.status === 'pending' && (
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => setPaymentModal({ isOpen: true, contribution: c })}
+                          className="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-colors"
+                        >
+                          Pay Now
+                        </button>
+                      </td>
+                    )}
+                    {role === 'user' && c.status !== 'pending' && (
+                      <td className="px-6 py-4">
+                        <span className="text-xs text-slate-500">—</span>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -251,6 +397,15 @@ export default function Contributions({ role, contributions, setContributions }:
           </div>
         </div>
       </div>
+
+      {paymentModal.isOpen && paymentModal.contribution && (
+        <PaymentModal
+          contribution={paymentModal.contribution}
+          participant={participants.find(p => p.id === paymentModal.contribution.participantId)!}
+          onClose={() => setPaymentModal({ isOpen: false })}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 }
