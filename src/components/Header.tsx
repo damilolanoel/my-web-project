@@ -1,6 +1,9 @@
 import type {} from 'react';
+import { useState } from 'react';
 import { ViewMode, UserRole } from '../types';
+import { useNotifications } from '../contexts/NotificationContext';
 import { Menu, Bell, Search } from 'lucide-react';
+import NotificationPanel from './NotificationPanel';
 
 interface HeaderProps {
   currentView: ViewMode;
@@ -16,9 +19,12 @@ const viewTitles: Record<ViewMode, string> = {
   schedule: 'Payment Schedule',
   reports: 'Reports & Analytics',
   settings: 'System Settings',
+  help: 'Help & Support',
 };
 
 export default function Header({ currentView, role, setMobileOpen }: HeaderProps) {
+  const { unreadCount } = useNotifications();
+  const [showNotifications, setShowNotifications] = useState(false);
   return (
     <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50">
       <div className="flex items-center justify-between px-4 lg:px-8 py-4">
@@ -49,11 +55,16 @@ export default function Header({ currentView, role, setMobileOpen }: HeaderProps
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-white transition-colors">
+          <button
+            onClick={() => setShowNotifications(true)}
+            className="relative p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-white transition-colors"
+          >
             <Bell size={18} />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center text-white">
-              3
-            </span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center text-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
 
           {/* Current cycle badge */}
@@ -63,6 +74,11 @@ export default function Header({ currentView, role, setMobileOpen }: HeaderProps
           </div>
         </div>
       </div>
+
+      <NotificationPanel
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </header>
   );
 }

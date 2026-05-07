@@ -48,5 +48,34 @@ export interface MonthData {
   status: 'completed' | 'active' | 'upcoming';
 }
 
-export type ViewMode = 'dashboard' | 'participants' | 'contributions' | 'payouts' | 'schedule' | 'reports' | 'settings';
+export interface Notification {
+  id: string;
+  userId: string;
+  type: 'payment_reminder' | 'payment_overdue' | 'payment_success' | 'payout_scheduled' | 'payout_received' | 'system';
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+  actionUrl?: string;
+}
+
+export interface AuditLog {
+  id: string;
+  userId: string;
+  action: string;
+  details: string;
+  timestamp: string;
+  ipAddress?: string;
+}
+
+export interface SystemSettings {
+  paymentReminderDays: number;
+  overduePenalty: number;
+  maxOverdueDays: number;
+  enableNotifications: boolean;
+  enableEmailNotifications: boolean;
+  enableSmsNotifications: boolean;
+}
+
+export type ViewMode = 'dashboard' | 'participants' | 'contributions' | 'payouts' | 'schedule' | 'reports' | 'settings' | 'help';
 export type UserRole = 'admin' | 'user';

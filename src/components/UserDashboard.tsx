@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Contribution, Payout } from '../types';
+import { useNotifications } from '../contexts/NotificationContext';
 import {
   participants,
   generateMonthData,
@@ -165,6 +166,7 @@ export default function UserDashboard({ setCurrentView, contributions, payouts, 
   const currentMonth = getCurrentMonth();
   const monthData = useMemo(() => generateMonthData(), []);
   const [paymentModal, setPaymentModal] = useState<{ isOpen: boolean; contribution?: Contribution }>({ isOpen: false });
+  const { addNotification } = useNotifications();
 
   const myContributions = contributions.filter(c => c.participantId === participantId);
   const myPayout = payouts.find(p => p.participantId === participantId)!;
@@ -177,6 +179,19 @@ export default function UserDashboard({ setCurrentView, contributions, payouts, 
     setContributions(prev => prev.map(c => 
       c.id === contributionId ? { ...c, status: 'paid' as const } : c
     ));
+
+    // Add success notification
+    const contribution = contributions.find(c => c.id === contributionId);
+    if (contribution) {
+      const month = monthData[contribution.month - 1];
+      addNotification({
+        userId: participantId,
+        type: 'payment_success',
+        title: 'Payment Successful',
+        message: `Your ${month?.label} contribution of ${formatCurrency(contribution.totalPaid)} has been processed successfully.`,
+        actionUrl: '#contributions',
+      });
+    }
   };
 
   const chartData = myContributions.map(c => ({

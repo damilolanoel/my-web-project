@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { User } from '../types';
-import { users } from '../data';
+import { users, verifyPassword } from '../data';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -10,15 +10,24 @@ export default function Login({ onLogin }: LoginProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-      onLogin(user);
-      setError('');
-    } else {
-      setError('Invalid username or password');
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const user = users.find(u => u.username === username);
+      if (user && await verifyPassword(password, user.password)) {
+        onLogin(user);
+      } else {
+        setError('Invalid username or password');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,9 +82,17 @@ export default function Login({ onLogin }: LoginProps) {
 
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-gold-500 hover:from-primary-600 hover:to-gold-600 text-slate-900 font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              disabled={isLoading}
+              className="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-gold-500 hover:from-primary-600 hover:to-gold-600 disabled:from-slate-600 disabled:to-slate-700 text-slate-900 disabled:text-slate-400 font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed"
             >
-              Sign In
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-900 border-t-transparent mr-2"></div>
+                  Signing In...
+                </div>
+              ) : (
+                'Sign In'
+              )}
             </button>
           </form>
 

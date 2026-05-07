@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { UserRole, Contribution } from '../types';
+import { useNotifications } from '../contexts/NotificationContext';
 import {
   participants,
   generateMonthData,
@@ -7,6 +8,7 @@ import {
   formatDate,
   getCurrentMonth,
 } from '../data';
+import { exportContributions } from '../utils/export';
 import {
   Filter,
   CheckCircle2,
@@ -153,6 +155,7 @@ export default function Contributions({ role, contributions, setContributions }:
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [paymentModal, setPaymentModal] = useState<{ isOpen: boolean; contribution?: Contribution }>({ isOpen: false });
   const monthData = useMemo(() => generateMonthData(), []);
+  const { addNotification } = useNotifications();
 
   const handleTogglePaid = (id: string) => {
     setContributions(prev => prev.map(c => {
@@ -165,9 +168,23 @@ export default function Contributions({ role, contributions, setContributions }:
   };
 
   const handlePaymentSuccess = (contributionId: string) => {
+    const contribution = contributions.find(c => c.id === contributionId);
     setContributions(prev => prev.map(c => 
       c.id === contributionId ? { ...c, status: 'paid' as const } : c
     ));
+
+    // Add success notification
+    if (contribution) {
+      const month = monthData[contribution.month - 1];
+      const participant = participants.find(p => p.id === contribution.participantId);
+      addNotification({
+        userId: contribution.participantId,
+        type: 'payment_success',
+        title: 'Payment Successful',
+        message: `Your ${month?.label} contribution of ${formatCurrency(contribution.totalPaid)} has been processed successfully.`,
+        actionUrl: '#contributions',
+      });
+    }
   };
 
   const filtered = contributions.filter(c => {
@@ -286,7 +303,10 @@ export default function Contributions({ role, contributions, setContributions }:
         </div>
 
         {role === 'admin' && (
-          <button className="ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-colors">
+          <button
+            onClick={() => exportContributions(filtered, participants)}
+            className="ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-colors"
+          >
             <Download size={14} />
             Export CSV
           </button>

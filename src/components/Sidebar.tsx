@@ -13,6 +13,7 @@ import {
   LogOut,
   X,
   ChevronRight,
+  HelpCircle,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,6 +33,7 @@ const navItems: { view: ViewMode; label: string; icon: React.ReactNode; adminOnl
   { view: 'schedule', label: 'Schedule', icon: <CalendarClock size={20} /> },
   { view: 'reports', label: 'Reports', icon: <BarChart3 size={20} />, adminOnly: true },
   { view: 'settings', label: 'Settings', icon: <Settings size={20} />, adminOnly: true },
+  { view: 'help', label: 'Help & Support', icon: <HelpCircle size={20} /> },
 ];
 
 export default function Sidebar({ currentView, setCurrentView, role, onLogout, mobileOpen, setMobileOpen }: SidebarProps) {

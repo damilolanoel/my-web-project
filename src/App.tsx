@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ViewMode, UserRole, Contribution, Payout, User } from './types';
 import { generateContributions, generatePayouts, users } from './data';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -11,6 +12,7 @@ import Payouts from './components/Payouts';
 import Schedule from './components/Schedule';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
+import Help from './components/Help';
 import Login from './components/Login';
 
 const CONTRIBUTIONS_STORAGE_KEY = 'bookey-contributions';
@@ -88,7 +90,11 @@ export default function App() {
   const userPayouts = role === 'admin' ? payouts : payouts.filter(p => p.participantId === currentUser?.participantId);
 
   if (!currentUser) {
-    return <Login onLogin={handleLogin} />;
+    return (
+      <NotificationProvider>
+        <Login onLogin={handleLogin} />
+      </NotificationProvider>
+    );
   }
 
   const renderView = () => {
@@ -112,13 +118,16 @@ export default function App() {
         return <Reports contributions={userContributions} payouts={userPayouts} />;
       case 'settings':
         return <Settings onResetData={handleResetData} />;
+      case 'help':
+        return <Help />;
       default:
         return <Dashboard role={role} setCurrentView={setCurrentView} contributions={userContributions} payouts={userPayouts} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <NotificationProvider>
+      <div className="min-h-screen bg-slate-950">
       {/* Background decoration */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" />
@@ -167,5 +176,6 @@ export default function App() {
         </footer>
       </main>
     </div>
+    </NotificationProvider>
   );
 }
