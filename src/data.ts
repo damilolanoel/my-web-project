@@ -1,4 +1,4 @@
-import { Participant, Contribution, Payout, MonthData } from './types';
+import { Participant, User, Contribution, Payout, MonthData } from './types';
 
 const AVATARS = ['👤', '👩', '👨', '👩‍💼', '👨‍💼', '👩‍💻', '👨‍💻', '👩‍🎓', '👨‍🎓', '👩‍🔬'];
 
@@ -13,6 +13,20 @@ export const participants: Participant[] = [
   { id: 'H', name: 'Halima Mohammed', email: 'halima@email.com', phone: '+234 808 901 2345', position: 8, avatar: AVATARS[7], joinDate: '2026-04-22' },
   { id: 'I', name: 'Ikenna Obi', email: 'ikenna@email.com', phone: '+234 809 012 3456', position: 9, avatar: AVATARS[8], joinDate: '2026-04-23' },
   { id: 'J', name: 'Jumoke Balogun', email: 'jumoke@email.com', phone: '+234 810 123 4567', position: 10, avatar: AVATARS[9], joinDate: '2026-04-24' },
+];
+
+export const users: User[] = [
+  { id: 'admin', participantId: '', username: 'admin', password: 'admin123', role: 'admin' },
+  { id: 'A', participantId: 'A', username: 'adebayo', password: 'pass123', role: 'user' },
+  { id: 'B', participantId: 'B', username: 'blessing', password: 'pass123', role: 'user' },
+  { id: 'C', participantId: 'C', username: 'chidera', password: 'pass123', role: 'user' },
+  { id: 'D', participantId: 'D', username: 'damilola', password: 'pass123', role: 'user' },
+  { id: 'E', participantId: 'E', username: 'emeka', password: 'pass123', role: 'user' },
+  { id: 'F', participantId: 'F', username: 'fatima', password: 'pass123', role: 'user' },
+  { id: 'G', participantId: 'G', username: 'gbenga', password: 'pass123', role: 'user' },
+  { id: 'H', participantId: 'H', username: 'halima', password: 'pass123', role: 'user' },
+  { id: 'I', participantId: 'I', username: 'ikenna', password: 'pass123', role: 'user' },
+  { id: 'J', participantId: 'J', username: 'jumoke', password: 'pass123', role: 'user' },
 ];
 
 const MONTH_LABELS = [

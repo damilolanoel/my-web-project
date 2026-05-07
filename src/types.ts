@@ -8,6 +8,14 @@ export interface Participant {
   joinDate: string;
 }
 
+export interface User {
+  id: string;
+  participantId: string;
+  username: string;
+  password: string; // In production, hash this
+  role: UserRole;
+}
+
 export interface Contribution {
   id: string;
   participantId: string;

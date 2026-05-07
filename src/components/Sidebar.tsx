@@ -19,7 +19,7 @@ interface SidebarProps {
   currentView: ViewMode;
   setCurrentView: (view: ViewMode) => void;
   role: UserRole;
-  setRole: (role: UserRole) => void;
+  onLogout: () => void;
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
 }
@@ -34,7 +34,7 @@ const navItems: { view: ViewMode; label: string; icon: React.ReactNode; adminOnl
   { view: 'settings', label: 'Settings', icon: <Settings size={20} />, adminOnly: true },
 ];
 
-export default function Sidebar({ currentView, setCurrentView, role, setRole, mobileOpen, setMobileOpen }: SidebarProps) {
+export default function Sidebar({ currentView, setCurrentView, role, onLogout, mobileOpen, setMobileOpen }: SidebarProps) {
   return (
     <>
       {/* Overlay for mobile */}
@@ -70,30 +70,26 @@ export default function Sidebar({ currentView, setCurrentView, role, setRole, mo
           </div>
         </div>
 
-        {/* Role Switcher */}
+        {/* User Info */}
         <div className="px-4 py-3">
-          <div className="flex bg-slate-800/80 rounded-xl p-1">
+          <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-gold-500 flex items-center justify-center text-sm font-bold text-slate-900">
+              {role === 'admin' ? <Shield size={16} /> : <User size={16} />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-200 truncate">
+                {role === 'admin' ? 'Administrator' : 'User'}
+              </p>
+              <p className="text-xs text-slate-400 truncate">
+                {role === 'admin' ? 'Full Access' : 'View Only'}
+              </p>
+            </div>
             <button
-              onClick={() => setRole('admin')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                role === 'admin'
-                  ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/20'
-                  : 'text-slate-400 hover:text-slate-300'
-              }`}
+              onClick={onLogout}
+              className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
+              title="Logout"
             >
-              <Shield size={14} />
-              Admin
-            </button>
-            <button
-              onClick={() => setRole('user')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                role === 'user'
-                  ? 'bg-gradient-to-r from-accent-600 to-accent-500 text-white shadow-lg shadow-accent-500/20'
-                  : 'text-slate-400 hover:text-slate-300'
-              }`}
-            >
-              <User size={14} />
-              User
+              <LogOut size={16} />
             </button>
           </div>
         </div>

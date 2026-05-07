@@ -32,16 +32,16 @@ interface UserDashboardProps {
   setCurrentView: (view: any) => void;
   contributions: Contribution[];
   payouts: Payout[];
+  participantId: string;
 }
 
-export default function UserDashboard({ setCurrentView, contributions, payouts }: UserDashboardProps) {
-  // Simulating logged-in user as User A (position 1)
-  const user = participants[0];
+export default function UserDashboard({ setCurrentView, contributions, payouts, participantId }: UserDashboardProps) {
+  const user = participants.find(p => p.id === participantId)!;
   const currentMonth = getCurrentMonth();
   const monthData = useMemo(() => generateMonthData(), []);
 
-  const myContributions = contributions.filter(c => c.participantId === user.id);
-  const myPayout = payouts.find(p => p.participantId === user.id)!;
+  const myContributions = contributions.filter(c => c.participantId === participantId);
+  const myPayout = payouts.find(p => p.participantId === participantId)!;
   const totalPaid = myContributions.filter(c => c.status === 'paid').reduce((sum, c) => sum + c.totalPaid, 0);
   const remaining = 1008000 - totalPaid;
 

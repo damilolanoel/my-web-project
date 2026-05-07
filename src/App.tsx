@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ViewMode, UserRole, Contribution, Payout } from './types';
-import { generateContributions, generatePayouts } from './data';
+import { ViewMode, UserRole, Contribution, Payout, User } from './types';
+import { generateContributions, generatePayouts, users } from './data';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -11,9 +11,11 @@ import Payouts from './components/Payouts';
 import Schedule from './components/Schedule';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
+import Login from './components/Login';
 
 const CONTRIBUTIONS_STORAGE_KEY = 'bookey-contributions';
 const PAYOUTS_STORAGE_KEY = 'bookey-payouts';
+const USER_STORAGE_KEY = 'bookey-user';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback;
@@ -27,7 +29,9 @@ function loadFromStorage<T>(key: string, fallback: T): T {
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
-  const [role, setRole] = useState<UserRole>('admin');
+  const [currentUser, setCurrentUser] = useState<User | null>(() =>
+    loadFromStorage(USER_STORAGE_KEY, null)
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [contributions, setContributions] = useState<Contribution[]>(() =>
     loadFromStorage(CONTRIBUTIONS_STORAGE_KEY, generateContributions())
@@ -35,6 +39,8 @@ export default function App() {
   const [payouts, setPayouts] = useState<Payout[]>(() =>
     loadFromStorage(PAYOUTS_STORAGE_KEY, generatePayouts())
   );
+
+  const role: UserRole = currentUser?.role || 'user';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -45,6 +51,24 @@ export default function App() {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(PAYOUTS_STORAGE_KEY, JSON.stringify(payouts));
   }, [payouts]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (currentUser) {
+      window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(currentUser));
+    } else {
+      window.localStorage.removeItem(USER_STORAGE_KEY);
+    }
+  }, [currentUser]);
+
+  const handleLogin = (user: User) => {
+    setCurrentUser(user);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setCurrentView('dashboard');
+  };
 
   const handleResetData = () => {
     if (typeof window === 'undefined') return;
@@ -59,29 +83,37 @@ export default function App() {
     window.localStorage.removeItem(PAYOUTS_STORAGE_KEY);
   };
 
+  // Filter data for users
+  const userContributions = role === 'admin' ? contributions : contributions.filter(c => c.participantId === currentUser?.participantId);
+  const userPayouts = role === 'admin' ? payouts : payouts.filter(p => p.participantId === currentUser?.participantId);
+
+  if (!currentUser) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   const renderView = () => {
     // User role sees different dashboard
     if (role === 'user' && currentView === 'dashboard') {
-      return <UserDashboard setCurrentView={setCurrentView} contributions={contributions} payouts={payouts} />;
+      return <UserDashboard setCurrentView={setCurrentView} contributions={userContributions} payouts={userPayouts} participantId={currentUser.participantId} />;
     }
 
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard role={role} setCurrentView={setCurrentView} contributions={contributions} payouts={payouts} />;
+        return <Dashboard role={role} setCurrentView={setCurrentView} contributions={userContributions} payouts={userPayouts} />;
       case 'participants':
-        return <Participants role={role} contributions={contributions} payouts={payouts} />;
+        return <Participants role={role} contributions={userContributions} payouts={userPayouts} />;
       case 'contributions':
-        return <Contributions role={role} contributions={contributions} setContributions={setContributions} />;
+        return <Contributions role={role} contributions={userContributions} setContributions={setContributions} />;
       case 'payouts':
-        return <Payouts role={role} payouts={payouts} setPayouts={setPayouts} />;
+        return <Payouts role={role} payouts={userPayouts} setPayouts={setPayouts} />;
       case 'schedule':
         return <Schedule />;
       case 'reports':
-        return <Reports contributions={contributions} payouts={payouts} />;
+        return <Reports contributions={userContributions} payouts={userPayouts} />;
       case 'settings':
         return <Settings onResetData={handleResetData} />;
       default:
-        return <Dashboard role={role} setCurrentView={setCurrentView} contributions={contributions} payouts={payouts} />;
+        return <Dashboard role={role} setCurrentView={setCurrentView} contributions={userContributions} payouts={userPayouts} />;
     }
   };
 
@@ -98,7 +130,7 @@ export default function App() {
         currentView={currentView}
         setCurrentView={setCurrentView}
         role={role}
-        setRole={setRole}
+        onLogout={handleLogout}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
       />
