@@ -17,17 +17,17 @@ export const participants: Participant[] = [
 ];
 
 export const users: User[] = [
-  { id: 'admin', participantId: '', username: 'admin', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'admin' }, // password: admin123
-  { id: 'A', participantId: 'A', username: 'adebayo', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' }, // password: pass123
-  { id: 'B', participantId: 'B', username: 'blessing', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'C', participantId: 'C', username: 'chidera', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'D', participantId: 'D', username: 'damilola', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'E', participantId: 'E', username: 'emeka', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'F', participantId: 'F', username: 'fatima', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'G', participantId: 'G', username: 'gbenga', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'H', participantId: 'H', username: 'halima', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'I', participantId: 'I', username: 'ikenna', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
-  { id: 'J', participantId: 'J', username: 'jumoke', password: '$2a$10$8K1p/5w6QyT5r3VzJc8UeO8qR7wJc8UeO8qR7wJc8UeO8qR7wJc8Ue', role: 'user' },
+  { id: 'admin', participantId: '', username: 'admin', password: '$2b$10$VJkKZKd3EHeJcndGCyqgUOv3.zCmEmKuZloR8f1W0HthE3LWq3ytS', role: 'admin' }, // password: admin123
+  { id: 'A', participantId: 'A', username: 'adebayo', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' }, // password: pass123
+  { id: 'B', participantId: 'B', username: 'blessing', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'C', participantId: 'C', username: 'chidera', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'D', participantId: 'D', username: 'damilola', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'E', participantId: 'E', username: 'emeka', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'F', participantId: 'F', username: 'fatima', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'G', participantId: 'G', username: 'gbenga', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'H', participantId: 'H', username: 'halima', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'I', participantId: 'I', username: 'ikenna', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'J', participantId: 'J', username: 'jumoke', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
 ];
 
 export async function hashPassword(password: string): Promise<string> {
