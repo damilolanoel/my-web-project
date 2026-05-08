@@ -19,7 +19,7 @@ export default function Login({ onLogin }: LoginProps) {
 
     try {
       const user = users.find(u => u.username === username);
-      if (user && await verifyPassword(password, user.password)) {
+      if (user && user.password === password) {
         onLogin(user);
       } else {
         setError('Invalid username or password');

@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import { Participant, User, Contribution, Payout, MonthData } from './types';
 
 const AVATARS = ['👤', '👩', '👨', '👩‍💼', '👨‍💼', '👩‍💻', '👨‍💻', '👩‍🎓', '👨‍🎓', '👩‍🔬'];
@@ -17,26 +16,27 @@ export const participants: Participant[] = [
 ];
 
 export const users: User[] = [
-  { id: 'admin', participantId: '', username: 'admin', password: '$2b$10$VJkKZKd3EHeJcndGCyqgUOv3.zCmEmKuZloR8f1W0HthE3LWq3ytS', role: 'admin' }, // password: admin123
-  { id: 'A', participantId: 'A', username: 'adebayo', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' }, // password: pass123
-  { id: 'B', participantId: 'B', username: 'blessing', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'C', participantId: 'C', username: 'chidera', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'D', participantId: 'D', username: 'damilola', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'E', participantId: 'E', username: 'emeka', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'F', participantId: 'F', username: 'fatima', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'G', participantId: 'G', username: 'gbenga', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'H', participantId: 'H', username: 'halima', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'I', participantId: 'I', username: 'ikenna', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
-  { id: 'J', participantId: 'J', username: 'jumoke', password: '$2b$10$FisD6Si3kBrUOULKOyjdx.DGvjq8c0kpB9BNPBUJ.KXjjAVT3yeim', role: 'user' },
+  { id: 'admin', participantId: '', username: 'admin', password: 'admin123', role: 'admin' }, // password: admin123
+  { id: 'A', participantId: 'A', username: 'adebayo', password: 'pass123', role: 'user' }, // password: pass123
+  { id: 'B', participantId: 'B', username: 'blessing', password: 'pass123', role: 'user' },
+  { id: 'C', participantId: 'C', username: 'chidera', password: 'pass123', role: 'user' },
+  { id: 'D', participantId: 'D', username: 'damilola', password: 'pass123', role: 'user' },
+  { id: 'E', participantId: 'E', username: 'emeka', password: 'pass123', role: 'user' },
+  { id: 'F', participantId: 'F', username: 'fatima', password: 'pass123', role: 'user' },
+  { id: 'G', participantId: 'G', username: 'gbenga', password: 'pass123', role: 'user' },
+  { id: 'H', participantId: 'H', username: 'halima', password: 'pass123', role: 'user' },
+  { id: 'I', participantId: 'I', username: 'ikenna', password: 'pass123', role: 'user' },
+  { id: 'J', participantId: 'J', username: 'jumoke', password: 'pass123', role: 'user' },
 ];
 
 export async function hashPassword(password: string): Promise<string> {
-  const saltRounds = 10;
-  return await bcrypt.hash(password, saltRounds);
+  // For demo purposes, return plain text
+  return password;
 }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-  return await bcrypt.compare(password, hashedPassword);
+  // For demo purposes, compare plain text
+  return password === hashedPassword;
 }
 
 const MONTH_LABELS = [
