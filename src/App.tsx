@@ -14,6 +14,7 @@ import Reports from './components/Reports';
 import Settings from './components/Settings';
 import Help from './components/Help';
 import Login from './components/Login';
+import LandingPage from './components/LandingPage';
 
 const CONTRIBUTIONS_STORAGE_KEY = 'bookey-contributions';
 const PAYOUTS_STORAGE_KEY = 'bookey-payouts';
@@ -35,6 +36,7 @@ export default function App() {
     loadFromStorage(USER_STORAGE_KEY, null)
   );
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [contributions, setContributions] = useState<Contribution[]>(() =>
     loadFromStorage(CONTRIBUTIONS_STORAGE_KEY, generateContributions())
   );
@@ -70,6 +72,11 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     setCurrentView('dashboard');
+    setShowLogin(false);
+  };
+
+  const handleShowLogin = () => {
+    setShowLogin(true);
   };
 
   const handleResetData = () => {
@@ -90,6 +97,13 @@ export default function App() {
   const userPayouts = role === 'admin' ? payouts : payouts.filter(p => p.participantId === currentUser?.participantId);
 
   if (!currentUser) {
+    if (!showLogin) {
+      return (
+        <NotificationProvider>
+          <LandingPage onGetStarted={handleShowLogin} />
+        </NotificationProvider>
+      );
+    }
     return (
       <NotificationProvider>
         <Login onLogin={handleLogin} />
