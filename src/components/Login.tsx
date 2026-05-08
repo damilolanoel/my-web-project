@@ -63,6 +63,7 @@ export default function Login({ onLogin }: LoginProps) {
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 placeholder="Enter your username"
+                autoComplete="username"
                 required
               />
             </div>
@@ -78,6 +79,7 @@ export default function Login({ onLogin }: LoginProps) {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 placeholder="Enter your password"
+                autoComplete="current-password"
                 required
               />
             </div>
