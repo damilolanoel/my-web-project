@@ -139,6 +139,7 @@ export default function App() {
         currentView={currentView}
         setCurrentView={setCurrentView}
         role={role}
+        currentUser={currentUser}
         onLogout={handleLogout}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewMode, UserRole } from '../types';
+import { ViewMode, UserRole, User } from '../types';
 import {
   LayoutDashboard,
   Users,
@@ -20,6 +20,7 @@ interface SidebarProps {
   currentView: ViewMode;
   setCurrentView: (view: ViewMode) => void;
   role: UserRole;
+  currentUser: User | null;
   onLogout: () => void;
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
@@ -36,7 +37,7 @@ const navItems: { view: ViewMode; label: string; icon: React.ReactNode; adminOnl
   { view: 'help', label: 'Help & Support', icon: <HelpCircle size={20} /> },
 ];
 
-export default function Sidebar({ currentView, setCurrentView, role, onLogout, mobileOpen, setMobileOpen }: SidebarProps) {
+export default function Sidebar({ currentView, setCurrentView, role, currentUser, onLogout, mobileOpen, setMobileOpen }: SidebarProps) {
   return (
     <>
       {/* Overlay for mobile */}
@@ -129,14 +130,14 @@ export default function Sidebar({ currentView, setCurrentView, role, onLogout, m
         <div className="p-4 border-t border-slate-700/50">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-gold-500 flex items-center justify-center text-sm font-bold text-slate-900">
-              {role === 'admin' ? 'A' : 'U'}
+              {currentUser?.username?.charAt(0).toUpperCase() || (role === 'admin' ? 'A' : 'U')}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">
-                {role === 'admin' ? 'System Admin' : 'Adebayo Oluwaseun'}
+                {currentUser?.username || (role === 'admin' ? 'System Admin' : 'User')}
               </p>
               <p className="text-xs text-slate-400 truncate">
-                {role === 'admin' ? 'admin@bookey.ng' : 'adebayo@email.com'}
+                {role === 'admin' ? 'admin@bookey.ng' : `${currentUser?.username || 'user'}@bookey.ng`}
               </p>
             </div>
             <LogOut size={16} className="text-slate-500 hover:text-slate-300 cursor-pointer flex-shrink-0" />
