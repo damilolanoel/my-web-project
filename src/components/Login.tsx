@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { User } from '../types';
-import { users, verifyPassword } from '../data';
+import { users } from '../data';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -18,13 +18,21 @@ export default function Login({ onLogin }: LoginProps) {
     setError('');
 
     try {
+      console.log('Login attempt:', { username, password });
+      console.log('Available users:', users.map(u => ({ username: u.username, password: u.password })));
+      
       const user = users.find(u => u.username === username);
+      console.log('Found user:', user);
+      
       if (user && user.password === password) {
+        console.log('Login successful for user:', user);
         onLogin(user);
       } else {
+        console.log('Login failed - user found:', !!user, 'password match:', user ? user.password === password : false);
         setError('Invalid username or password');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
