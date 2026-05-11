@@ -20,6 +20,7 @@ const viewTitles: Record<ViewMode, string> = {
   reports: 'Reports & Analytics',
   settings: 'System Settings',
   help: 'Help & Support',
+  pay: 'Complete Payment',
 };
 
 export default function Header({ currentView, role, setMobileOpen }: HeaderProps) {

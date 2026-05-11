@@ -15,6 +15,7 @@ import Settings from './components/Settings';
 import Help from './components/Help';
 import Login from './components/Login';
 import LandingPage from './components/LandingPage';
+import PaymentPage from './components/PaymentPage';
 
 const CONTRIBUTIONS_STORAGE_KEY = 'bookey-contributions';
 const PAYOUTS_STORAGE_KEY = 'bookey-payouts';
@@ -62,6 +63,26 @@ export default function App() {
       window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(currentUser));
     } else {
       window.localStorage.removeItem(USER_STORAGE_KEY);
+    }
+  }, [currentUser]);
+
+  // Handle payment link URL params
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const contributionId = urlParams.get('contributionId');
+    const userId = urlParams.get('userId');
+    const amount = urlParams.get('amount');
+    const month = urlParams.get('month');
+
+    if (contributionId && userId && amount && month) {
+      // If user is not logged in or not the correct user, redirect to login
+      if (!currentUser || currentUser.participantId !== userId) {
+        setShowLogin(true);
+        return;
+      }
+      // Set view to pay mode
+      setCurrentView('pay');
     }
   }, [currentUser]);
 
@@ -134,6 +155,8 @@ export default function App() {
         return <Settings onResetData={handleResetData} />;
       case 'help':
         return <Help />;
+      case 'pay':
+        return <PaymentPage contributions={userContributions} setContributions={setContributions} onBack={() => setCurrentView('contributions')} />;
       default:
         return <Dashboard role={role} setCurrentView={setCurrentView} contributions={userContributions} payouts={userPayouts} />;
     }

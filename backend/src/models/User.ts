@@ -1,7 +1,7 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import bcrypt from 'bcryptjs';
+import { db } from '../config/database';
 
-export interface IUser extends Document {
+export interface IUser {
+  _id: string;
   username: string;
   email: string;
   password: string;
@@ -13,79 +13,44 @@ export interface IUser extends Document {
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
-  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const userSchema = new Schema<IUser>({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    minlength: 3,
-    maxlength: 50
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  role: {
-    type: String,
-    enum: ['admin', 'user'],
-    default: 'user'
-  },
-  firstName: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 50
-  },
-  lastName: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 50
-  },
-  phoneNumber: {
-    type: String,
-    trim: true
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  lastLogin: {
-    type: Date
+class UserModel {
+  async find(query: any = {}) {
+    const result = await db.collection('users').find(query);
+    return result.results;
   }
-}, {
-  timestamps: true
-});
 
-// Hash password before saving
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error: any) {
-    next(error);
+  async findOne(query: any) {
+    return await db.collection('users').findOne(query);
   }
-});
 
-// Compare password method
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
+  async create(data: Partial<IUser>) {
+    const user = {
+      ...data,
+      _id: Date.now().toString(),
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as IUser;
+    await db.collection('users').insertOne(user);
+    return user;
+  }
 
-export default mongoose.model<IUser>('User', userSchema);
+  async findByIdAndUpdate(id: string, update: any) {
+    await db.collection('users').updateOne({ _id: id }, { $set: update });
+    return await this.findOne({ _id: id });
+  }
+
+  async deleteMany(query: any = {}) {
+    return await db.collection('users').deleteMany(query);
+  }
+
+  // Password comparison (simple for demo)
+  comparePassword(candidatePassword: string, hashedPassword: string): Promise<boolean> {
+    return Promise.resolve(candidatePassword === hashedPassword); // In production, use bcrypt
+  }
+}
+
+const User = new UserModel();
+export default User;

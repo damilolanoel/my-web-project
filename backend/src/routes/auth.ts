@@ -98,9 +98,9 @@ router.post('/login', [
     const { username, password } = req.body;
 
     // Check for user
-    const user = await User.findOne({ username }).select('+password');
+    const user = await User.findOne({ username });
 
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user || !(await User.comparePassword(password, user.password))) {
       return res.status(401).json({
         success: false,
         error: 'Invalid credentials'
@@ -108,16 +108,15 @@ router.post('/login', [
     }
 
     // Update last login
-    user.lastLogin = new Date();
-    await user.save();
+    await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
 
-    const token = generateToken(user._id.toString());
+    const token = generateToken(user._id);
 
     res.json({
       success: true,
       data: {
         user: {
-          id: user._id,
+          _id: user._id,
           username: user.username,
           email: user.email,
           firstName: user.firstName,

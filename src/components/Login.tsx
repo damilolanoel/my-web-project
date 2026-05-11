@@ -18,22 +18,27 @@ export default function Login({ onLogin }: LoginProps) {
     setError('');
 
     try {
-      console.log('Login attempt:', { username, password });
-      console.log('Available users:', users.map(u => ({ username: u.username, password: u.password })));
-      
-      const user = users.find(u => u.username === username);
-      console.log('Found user:', user);
-      
-      if (user && user.password === password) {
-        console.log('Login successful for user:', user);
-        onLogin(user);
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token and user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        onLogin(data.user);
       } else {
-        console.log('Login failed - user found:', !!user, 'password match:', user ? user.password === password : false);
-        setError('Invalid username or password');
+        setError(data.message || 'Login failed');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Login failed. Please try again.');
+      setError('Network error. Please check if backend is running.');
     } finally {
       setIsLoading(false);
     }

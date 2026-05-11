@@ -9,11 +9,17 @@ export interface Participant {
 }
 
 export interface User {
-  id: string;
-  participantId: string;
+  _id: string;
   username: string;
-  password: string; // In production, hash this
+  email: string;
   role: UserRole;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  isActive: boolean;
+  lastLogin?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Contribution {
@@ -77,5 +83,5 @@ export interface SystemSettings {
   enableSmsNotifications: boolean;
 }
 
-export type ViewMode = 'dashboard' | 'participants' | 'contributions' | 'payouts' | 'schedule' | 'reports' | 'settings' | 'help';
+export type ViewMode = 'dashboard' | 'participants' | 'contributions' | 'payouts' | 'schedule' | 'reports' | 'settings' | 'help' | 'pay';
 export type UserRole = 'admin' | 'user';

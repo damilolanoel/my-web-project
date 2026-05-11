@@ -167,6 +167,26 @@ export default function Contributions({ role, contributions, setContributions }:
     }));
   };
 
+  const handleGenerateLink = async (contribution: Contribution) => {
+    const participant = participants.find(p => p.id === contribution.participantId);
+    const paymentLink = `${window.location.origin}/pay?contributionId=${contribution.id}&userId=${contribution.participantId}&amount=${contribution.totalPaid}&month=${contribution.month}`;
+
+    // Copy to clipboard
+    try {
+      await navigator.clipboard.writeText(paymentLink);
+      addNotification({
+        userId: 'admin',
+        type: 'system_alert',
+        title: 'Payment Link Generated',
+        message: `Payment link for ${participant?.name}'s ${monthData[contribution.month - 1]?.label} contribution has been copied to clipboard.`,
+        actionUrl: '#contributions',
+      });
+    } catch (err) {
+      // Fallback for browsers that don't support clipboard API
+      alert(`Payment Link: ${paymentLink}`);
+    }
+  };
+
   const handlePaymentSuccess = (contributionId: string) => {
     const contribution = contributions.find(c => c.id === contributionId);
     setContributions(prev => prev.map(c => 
@@ -361,21 +381,29 @@ export default function Contributions({ role, contributions, setContributions }:
                     <td className="px-6 py-4">{statusBadge(c.status)}</td>
                     {role === 'admin' && (
                       <td className="px-6 py-4">
-                        {c.status !== 'paid' ? (
+                        <div className="flex gap-2">
+                          {c.status !== 'paid' ? (
+                            <button
+                              onClick={() => handleTogglePaid(c.id)}
+                              className="px-3 py-1.5 rounded-lg bg-primary-600/20 text-primary-400 text-xs font-medium hover:bg-primary-600/30 transition-colors border border-primary-500/20"
+                            >
+                              Mark Paid
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleTogglePaid(c.id)}
+                              className="px-3 py-1.5 rounded-lg bg-slate-700/20 text-slate-300 text-xs font-medium hover:bg-slate-700/30 transition-colors border border-slate-600/30"
+                            >
+                              Mark Unpaid
+                            </button>
+                          )}
                           <button
-                            onClick={() => handleTogglePaid(c.id)}
-                            className="px-3 py-1.5 rounded-lg bg-primary-600/20 text-primary-400 text-xs font-medium hover:bg-primary-600/30 transition-colors border border-primary-500/20"
+                            onClick={() => handleGenerateLink(c)}
+                            className="px-3 py-1.5 rounded-lg bg-gold-600/20 text-gold-400 text-xs font-medium hover:bg-gold-600/30 transition-colors border border-gold-500/20"
                           >
-                            Mark Paid
+                            Generate Link
                           </button>
-                        ) : (
-                          <button
-                            onClick={() => handleTogglePaid(c.id)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-700/20 text-slate-300 text-xs font-medium hover:bg-slate-700/30 transition-colors border border-slate-600/30"
-                          >
-                            Mark Unpaid
-                          </button>
-                        )}
+                        </div>
                       </td>
                     )}
                     {role === 'user' && c.status === 'pending' && (
